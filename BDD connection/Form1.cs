@@ -24,7 +24,7 @@ namespace BDD_connection
             string name = this.textBoxName.Text;
             string surname = this.textBoxSname.Text;
             string email = this.textBoxEmail.Text;
-            int telf = (int)this.telfBox.Value;
+            string telf = (string)this.telfBox.Text;
             DateTime fContrato = this.DatePicker.Value;
             int fkJob_id = (int)this.jobIdBox.Value;
             decimal salary = (decimal)this.SalaryBox.Value;
@@ -35,13 +35,14 @@ namespace BDD_connection
             DalEmployees dalEmployee = new DalEmployees();
             dalEmployee.InsertEmployee(employees);
             ConnectionBD connection = new ConnectionBD();
-            connection.Disconnect();
+            connection.Disconnect();            
         }
 
         private void MostrarTabla_Click(object sender, EventArgs e)
         {
-
-            List<Employees> empleados = DalEmployees.SelectEmployees();
+            ListaEmpleados.Items.Clear();
+            ListaEmpleados.Columns.Clear();
+            List<Employees> empleados = DalEmployees.SelectEmployees();            
             ListaEmpleados.Columns.Add("IdEmp", 100, HorizontalAlignment.Center);
             ListaEmpleados.Columns.Add("Name", 100, HorizontalAlignment.Center);
             ListaEmpleados.Columns.Add("Surname", 100, HorizontalAlignment.Center);
@@ -52,6 +53,44 @@ namespace BDD_connection
             ListaEmpleados.Columns.Add("Salary", 100, HorizontalAlignment.Center);
             ListaEmpleados.Columns.Add("ManagerId", 100, HorizontalAlignment.Center);
             ListaEmpleados.Columns.Add("DeptId", 100, HorizontalAlignment.Center);
+            int i = 0;
+            foreach (var item in empleados)
+            {
+                i++;
+                ListViewItem lista = new ListViewItem(item.Employee_id.ToString());
+
+                lista.SubItems.Add(item.First_name.ToString());
+                lista.SubItems.Add(item.Last_name.ToString());
+                lista.SubItems.Add(item.Email.ToString());
+
+                if (item.PhoneNumber != null)
+                {
+                    lista.SubItems.Add(item.PhoneNumber.ToString());
+                }
+
+                else 
+                {
+                    item.PhoneNumber = "";
+                    lista.SubItems.Add(item.PhoneNumber.ToString());
+                }
+
+                if (item.Date != null)
+                { 
+                    lista.SubItems.Add(item.Date.ToString());
+                }
+
+                lista.SubItems.Add(item.Fkjob_id.ToString());
+                lista.SubItems.Add(item.Salary.ToString());
+                lista.SubItems.Add(item.Fkmanager_id.ToString());
+                lista.SubItems.Add(item.Fkdepartment_id.ToString());
+
+                this.ListaEmpleados.Items.Add(lista);
+            }
+        }
+        
+        private void butBorrar_Click(object sender, EventArgs e)
+        {
+            DalEmployees.BorrarEmpleado(int.Parse(ListaEmpleados.SelectedItems[0].SubItems[0].Text));            
         }
     }
 }
